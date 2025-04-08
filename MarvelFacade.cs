@@ -24,31 +24,37 @@ namespace HeroExplorer
 
         public static async Task PopulateMarvelCharactersAsync(ObservableCollection<Character> marvelCharacters)
         {
-            var characterDataWrapper = await GetCharacterDataWrapperAsync();
-
-            var characters = characterDataWrapper.data.results;
-
-            foreach (var character in characters)
+            try
             {
-                // Filter characters that are missing thumbnail images
+                var characterDataWrapper = await GetCharacterDataWrapperAsync();
 
-                if (character.thumbnail != null
-                    && character.thumbnail.path != ""
-                    && character.thumbnail.path != ImageNotAvailablePath)
+                var characters = characterDataWrapper.data.results;
+
+                foreach (var character in characters)
                 {
+                    // Filter characters that are missing thumbnail images
 
-                    character.thumbnail.small = String.Format("{0}/standard_small.{1}",
-                        character.thumbnail.path,
-                        character.thumbnail.extension);
+                    if (character.thumbnail != null
+                        && character.thumbnail.path != ""
+                        && character.thumbnail.path != ImageNotAvailablePath)
+                    {
 
-                    character.thumbnail.large = String.Format("{0}/portrait_xlarge.{1}",
-                        character.thumbnail.path,
-                        character.thumbnail.extension);
+                        character.thumbnail.small = String.Format("{0}/standard_small.{1}",
+                            character.thumbnail.path,
+                            character.thumbnail.extension);
 
-                    marvelCharacters.Add(character);
+                        character.thumbnail.large = String.Format("{0}/portrait_xlarge.{1}",
+                            character.thumbnail.path,
+                            character.thumbnail.extension);
+
+                        marvelCharacters.Add(character);
+                    }
                 }
             }
-
+            catch (Exception)
+            {
+                return;
+            }
         }
 
         private static async Task<CharacterDataWrapper> GetCharacterDataWrapperAsync()
