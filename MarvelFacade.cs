@@ -32,8 +32,6 @@ namespace HeroExplorer
 
                 foreach (var character in characters)
                 {
-                    // Filter characters that are missing thumbnail images
-
                     if (character.thumbnail != null
                         && character.thumbnail.path != ""
                         && character.thumbnail.path != ImageNotAvailablePath)
@@ -68,8 +66,6 @@ namespace HeroExplorer
 
                 foreach (var comic in comics)
                 {
-                    // Filter characters that are missing thumbnail images
-
                     if (comic.thumbnail != null
                         && comic.thumbnail.path != ""
                         && comic.thumbnail.path != ImageNotAvailablePath)
@@ -97,7 +93,6 @@ namespace HeroExplorer
 
         private static async Task<CharacterDataWrapper> GetCharacterDataWrapperAsync()
         {
-            // Assemble the URL
             Random random = new Random();
             var offset = random.Next(MaxCharacters);
 
@@ -105,8 +100,6 @@ namespace HeroExplorer
                 offset);
 
             var jsonMessage = await CallMarvelAsync(url);
-
-            // Response -> string / json -> deserialize
             var serializer = new DataContractJsonSerializer(typeof(CharacterDataWrapper));
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonMessage));
 
@@ -118,10 +111,8 @@ namespace HeroExplorer
         {
             var url = String.Format("http://gateway.marvel.com:80/v1/public/comics?characters={0}&limit=10",
                 characterId);
-
             var jsonMessage = await CallMarvelAsync(url);
 
-            // Response -> string / json -> deserialize
             var serializer = new DataContractJsonSerializer(typeof(ComicDataWrapper));
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonMessage));
 
@@ -131,13 +122,10 @@ namespace HeroExplorer
 
         private async static Task<string> CallMarvelAsync(string url)
         {
-            // Get the MD5 Hash
             var timeStamp = DateTime.Now.Ticks.ToString();
             var hash = CreateHash(timeStamp);
 
             string completeUrl = String.Format("{0}&apikey={1}&ts={2}&hash={3}", url, PublicKey, timeStamp, hash);
-
-            // Call out to Marvel
             HttpClient http = new HttpClient();
             var response = await http.GetAsync(completeUrl);
             return await response.Content.ReadAsStringAsync();
@@ -151,8 +139,6 @@ namespace HeroExplorer
             return hashedMessage;
         }
 
-        // From:
-        // http://stackoverflow.com/questions/8299142/how-to-generate-md5-hash-code-for-my-winrt-app-using-c
         private static string ComputeMD5(string str)
         {
             var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);

@@ -8,6 +8,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Core;
+using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -17,13 +19,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace HeroExplorer
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+    
     public sealed partial class MainPage : Page
     {
         public ObservableCollection<Character> MarvelCharacters { get; set; }
@@ -42,7 +41,7 @@ namespace HeroExplorer
             MyProgressRing.IsActive = true;
             MyProgressRing.Visibility = Visibility.Visible;
 
-            while (MarvelCharacters.Count < 10)
+            while (MarvelCharacters.Count < 12)
             {
                 Task t = MarvelFacade.PopulateMarvelCharactersAsync(MarvelCharacters);
                 await t;
@@ -54,6 +53,11 @@ namespace HeroExplorer
 
         private async void MasterListView_ItemClick(object sender, ItemClickEventArgs e)
         {
+            //sound to play when character is selected: 
+            var characterSelectSound = new MediaPlayer();
+            characterSelectSound.Source = MediaSource.CreateFromUri(new Uri("ms-appx:///Assets/charSelect.wav"));
+            characterSelectSound.Play();
+
             MyProgressRing.IsActive = true;
             MyProgressRing.Visibility = Visibility.Visible;
 
@@ -72,16 +76,6 @@ namespace HeroExplorer
             DetailImage.Source = largeImage;
 
             MarvelComics.Clear();
-
-            /*
-            while (MarvelComics.Count < 10)
-            {
-                Task t = MarvelFacade.PopulateMarvelComicsAsync(
-                        selectedCharacter.id,
-                        MarvelComics);
-                await t;
-            }
-            */
 
             await MarvelFacade.PopulateMarvelComicsAsync(
                         selectedCharacter.id,
